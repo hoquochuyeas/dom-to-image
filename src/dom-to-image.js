@@ -46,6 +46,7 @@
      * @param {Object} options.style - an object whose properties to be copied to node's style before rendering.
      * @param {Number} options.quality - a Number between 0 and 1 indicating image quality (applicable to JPEG only),
                 defaults to 1.0.
+     * @param {Number} options.dpi - dots per inch to be used when rasterizing image.
      * @param {String} options.imagePlaceholder - dataURL to use as a placeholder for failed images, default behaviour is to fail fast on images we can't fetch
      * @param {Boolean} options.cacheBust - set to true to cache bust by appending the time to the request url
      * @return {Promise} - A promise that is fulfilled with a SVG image data URL
@@ -136,13 +137,13 @@
 
     function copyOptions(options) {
         // Copy options to impl options for use in impl
-        if(typeof(options.imagePlaceholder) === 'undefined') {
+        if (typeof (options.imagePlaceholder) === 'undefined') {
             domtoimage.impl.options.imagePlaceholder = defaultOptions.imagePlaceholder;
         } else {
             domtoimage.impl.options.imagePlaceholder = options.imagePlaceholder;
         }
 
-        if(typeof(options.cacheBust) === 'undefined') {
+        if (typeof (options.cacheBust) === 'undefined') {
             domtoimage.impl.options.cacheBust = defaultOptions.cacheBust;
         } else {
             domtoimage.impl.options.cacheBust = options.cacheBust;
@@ -163,7 +164,14 @@
             var canvas = document.createElement('canvas');
             canvas.width = options.width || util.width(domNode);
             canvas.height = options.height || util.height(domNode);
-
+            var ctx = canvas.getContext('2d');
+            if (options.dpi != null) {
+                var defaultDPI = options.defaultDPI || 96;
+                var scaleFactor = options.dpi / defaultDPI;
+                canvas.width = Math.ceil(canvas.width * scaleFactor);
+                canvas.height = Math.ceil(canvas.height * scaleFactor);
+                ctx.scale(scaleFactor, scaleFactor);
+            }
             if (options.bgcolor) {
                 var ctx = canvas.getContext('2d');
                 ctx.fillStyle = options.bgcolor;
@@ -462,7 +470,7 @@
 
         function getAndEncode(url) {
             var TIMEOUT = 30000;
-            if(domtoimage.impl.options.cacheBust) {
+            if (domtoimage.impl.options.cacheBust) {
                 // Cache bypass so we dont have CORS issues with cached images
                 // Source: https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest#Bypassing_the_cache
                 url += ((/\?/).test(url) ? "&" : "?") + (new Date()).getTime();
@@ -479,9 +487,9 @@
                 request.send();
 
                 var placeholder;
-                if(domtoimage.impl.options.imagePlaceholder) {
+                if (domtoimage.impl.options.imagePlaceholder) {
                     var split = domtoimage.impl.options.imagePlaceholder.split(/,/);
-                    if(split && split[1]) {
+                    if (split && split[1]) {
                         placeholder = split[1];
                     }
                 }
@@ -490,7 +498,7 @@
                     if (request.readyState !== 4) return;
 
                     if (request.status !== 200) {
-                        if(placeholder) {
+                        if (placeholder) {
                             resolve(placeholder);
                         } else {
                             fail('cannot fetch resource: ' + url + ', status: ' + request.status);
@@ -508,7 +516,7 @@
                 }
 
                 function timeout() {
-                    if(placeholder) {
+                    if (placeholder) {
                         resolve(placeholder);
                     } else {
                         fail('timeout of ' + TIMEOUT + 'ms occured while fetching resource: ' + url);
