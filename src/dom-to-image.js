@@ -190,22 +190,22 @@
             .then(makeNodeCopy)
             .then(function (clone) {
                 //HuyHQ: fix for shadow root render
-                let currentNode = null;
-                if (node && node.shadowRoot) {
-                    currentNode = node.shadowRoot.querySelector("div");
-                } else {
-                    currentNode = node;
-                }
-                return cloneChildren(currentNode, clone, filter);
+                // let currentNode = null;
+                // if (node && node.shadowRoot) {
+                //     currentNode = node.shadowRoot.querySelector("div");
+                // } else {
+                //     currentNode = node;
+                // }
+                return cloneChildren(node, clone, filter);
             })
             .then(function (clone) {
-                let currentNode = null;
-                if (node && node.shadowRoot) {
-                    currentNode = node.shadowRoot.querySelector("div");
-                } else {
-                    currentNode = node;
-                }
-                return processClone(currentNode, clone);
+                // let currentNode = null;
+                // if (node && node.shadowRoot) {
+                //     currentNode = node.shadowRoot.querySelector("div");
+                // } else {
+                //     currentNode = node;
+                // }
+                return processClone(node, clone);
             });
 
         function makeNodeCopy(node) {
