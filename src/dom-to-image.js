@@ -469,6 +469,7 @@
                 image.onload = function () {
                     resolve(image);
                 };
+                image.setAttribute("crossOrigin", "anonymous");
                 image.onerror = reject;
                 image.src = uri;
             });
