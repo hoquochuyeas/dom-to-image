@@ -20,6 +20,7 @@
         toJpeg: toJpeg,
         toBlob: toBlob,
         toPixelData: toPixelData,
+        cloneNode: cloneNode,
         impl: {
             fontFaces: fontFaces,
             images: images,
@@ -191,8 +192,8 @@
             .then(function (clone) {
                 //HuyHQ: fix for shadow root render
                 let currentNode = node;
-                if (node.shadowRoot !== null)
-                    currentNode = node.shadowRoot.querySelector('div');
+                if (currentNode && currentNode.shadowRoot)
+                    currentNode = currentNode.shadowRoot.querySelector("div");
                 return cloneChildren(currentNode, clone, filter);
             })
             .then(function (clone) {
