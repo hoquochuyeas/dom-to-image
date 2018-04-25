@@ -197,7 +197,10 @@
                 return cloneChildren(currentNode, clone, filter);
             })
             .then(function (clone) {
-                return processClone(node, clone);
+                let currentNode = node;
+                if (currentNode && currentNode.shadowRoot)
+                    currentNode = currentNode.shadowRoot.querySelector("div");
+                return processClone(currentNode, clone);
             });
 
         function makeNodeCopy(node) {
