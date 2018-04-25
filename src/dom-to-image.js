@@ -19,6 +19,7 @@
         toPng: toPng,
         toJpeg: toJpeg,
         toBlob: toBlob,
+        cloneNode: cloneNode,
         toPixelData: toPixelData,
         impl: {
             fontFaces: fontFaces,
