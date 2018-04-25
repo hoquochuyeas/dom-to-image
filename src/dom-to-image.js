@@ -469,7 +469,8 @@
                 image.onload = function () {
                     resolve(image);
                 };
-                image.setAttribute("crossOrigin", "anonymous");
+                //HuyHQ: add cors to origin
+                image.crossOrigin = "Anonymous";
                 image.onerror = reject;
                 image.src = uri;
             });
