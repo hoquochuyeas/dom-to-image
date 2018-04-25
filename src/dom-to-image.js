@@ -186,16 +186,25 @@
 
     function cloneNode(node, filter, root) {
         if (!root && filter && !filter(node)) return Promise.resolve();
-        let currentNode = node.cloneNode(true);
-        if (node && node.shadowRoot)
-            currentNode = node.shadowRoot.querySelector("div");
-        return Promise.resolve(currentNode)
+        return Promise.resolve(node)
             .then(makeNodeCopy)
             .then(function (clone) {
                 //HuyHQ: fix for shadow root render
+                let currentNode = null;
+                if (node && node.shadowRoot) {
+                    currentNode = node.shadowRoot.querySelector("div");
+                } else {
+                    currentNode = node;
+                }
                 return cloneChildren(currentNode, clone, filter);
             })
             .then(function (clone) {
+                let currentNode = null;
+                if (node && node.shadowRoot) {
+                    currentNode = node.shadowRoot.querySelector("div");
+                } else {
+                    currentNode = node;
+                }
                 return processClone(currentNode, clone);
             });
 
