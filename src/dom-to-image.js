@@ -19,8 +19,8 @@
         toPng: toPng,
         toJpeg: toJpeg,
         toBlob: toBlob,
-        cloneNode: cloneNode,
         toPixelData: toPixelData,
+        cloneNode: cloneNode,
         impl: {
             fontFaces: fontFaces,
             images: images,
@@ -55,6 +55,7 @@
     function toSvg(node, options) {
         options = options || {};
         copyOptions(options);
+
         return Promise.resolve(node)
             .then(function (node) {
                 return cloneNode(node, options.filter, true);
@@ -185,14 +186,26 @@
 
     function cloneNode(node, filter, root) {
         if (!root && filter && !filter(node)) return Promise.resolve();
-
         return Promise.resolve(node)
             .then(makeNodeCopy)
             .then(function (clone) {
-                return cloneChildren(node, clone, filter);
+                //HuyHQ: fix for shadow root render
+                let currentNode = null;
+                if (node && node.shadowRoot) {
+                    currentNode = node.shadowRoot.querySelector("div");
+                } else {
+                    currentNode = node;
+                }
+                return cloneChildren(currentNode, clone, filter);
             })
             .then(function (clone) {
-                return processClone(node, clone);
+                let currentNode = null;
+                if (node && node.shadowRoot) {
+                    currentNode = node.shadowRoot.querySelector("div");
+                } else {
+                    currentNode = node;
+                }
+                return processClone(currentNode, clone);
             });
 
         function makeNodeCopy(node) {
@@ -464,7 +477,9 @@
                 image.onload = function () {
                     resolve(image);
                 };
-                image.onerror = reject;
+                //HuyHQ: add cors to origin
+                image.crossOrigin = "Anonymous";
+                //image.onerror = reject;
                 image.src = uri;
             });
         }
